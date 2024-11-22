@@ -2,7 +2,6 @@ name: Create jira ticket
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   issues:
-    # Todo: Change the trigger to specific label created
     types: [opened]
 
 jobs:
