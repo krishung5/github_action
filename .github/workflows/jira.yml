@@ -36,4 +36,5 @@ jobs:
         python3 create_jira_ticket.py  --component "GitHub" --issue "${{ github.event.issue.number }}" \
           --github-html-url "${{ github.event.issue.html_url }}" --github-issue-title "${{ github.event.issue.title }}" \
           --github-issue-body-file issue_body.txt \
-          --jira-user "${{ secrets.JIRA_USER }}" --jira-api-token "${{ secrets.JIRA_API_TOKEN }}"
+          --jira-user "${{ secrets.JIRA_USER }}" --jira-api-token "${{ secrets.JIRA_API_TOKEN }}" \
+          --jira-api-url "${{ secrets.JIRA_API_URL }}"

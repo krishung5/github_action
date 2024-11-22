@@ -150,7 +150,7 @@ if __name__ == "__main__":
         default="DLIS",
     )
     jira_group.add_argument(
-        "--jira_api_url",
+        "--jira-api-url",
         type=str,
         help="JIRA API url",
     )
