@@ -5,14 +5,14 @@ on:
     types: [opened]
 
 jobs:
-  get-issue:
-    runs-on: ubuntu-latest
-    # name: Print out issue information
-    steps:
-      - run: echo "Issue title: ${{ github.event.issue.title }}"
-      - run: echo "Issue body: ${{ github.event.issue.body }}"
-      - run: echo "Issue number: ${{ github.event.issue.number }}"
-      - run: echo "Issue html_url: ${{ github.event.issue.html_url }}"
+  # get-issue:
+  #   runs-on: ubuntu-latest
+  #   # name: Print out issue information
+  #   steps:
+  #     - run: echo "Issue title: ${{ github.event.issue.title }}"
+  #     - run: echo "Issue body: ${{ github.event.issue.body }}"
+  #     - run: echo "Issue number: ${{ github.event.issue.number }}"
+  #     - run: echo "Issue html_url: ${{ github.event.issue.html_url }}"
 
   
   create-jira-ticket:
