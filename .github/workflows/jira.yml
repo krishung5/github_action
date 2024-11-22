@@ -32,7 +32,6 @@ jobs:
       run: echo "${{ github.event.issue.body }}" > issue_body.txt && cat issue_body.txt
     - name: execute py script
       run: |
-        python create_jira_ticket.py -h && \
         python3 create_jira_ticket.py  --component "GitHub" --issue "${{ github.event.issue.number }}" \
           --github-html-url "${{ github.event.issue.html_url }}" --github-issue-title "${{ github.event.issue.title }}" \
           --github-issue-body-file issue_body.txt \
