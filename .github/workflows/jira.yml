@@ -9,30 +9,32 @@ jobs:
     runs-on: ubuntu-latest
     name: Get issue info
     steps:
-      - run: echo "Issue title ${{ github.event.issue.title }} event."
-      - run: echo "Issue body ${{ github.event.issue.body }} event."
-      - run: echo "Issue number ${{ github.event.issue.number }} event."
+      - run: echo "Issue title: ${{ github.event.issue.title }}"
+      - run: echo "Issue body: ${{ github.event.issue.body }}"
+      - run: echo "Issue number: ${{ github.event.issue.number }}"
+      - run: echo "Issue html_url: ${{ github.event.issue.html_url }}"
 
   
-  # build:
-  #   runs-on: ubuntu-latest
-  #   name: Jira Example
-  #   steps:
-  #   - name: checkout repo content
-  #     uses: actions/checkout@v3 # checkout the repository content to github runner.
-  #     - name: setup python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: 3.12 #install the python needed
-  #     - name: Install dependencies
-  #       run: |
-  #         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-  #     - name: execute py script
-  #       run: |
-  #         python create_jira_ticket.py -h
-  #   - name: Login
-  #     uses: atlassian/gajira-login@v3
-  #     env:
-  #       JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-  #       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-  #       JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+  build:
+    runs-on: ubuntu-latest
+    name: Create Jira ticket
+    steps:
+    - name: checkout repo content
+      uses: actions/checkout@v3 # checkout the repository content to github runner.
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12 #install the python needed
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: execute py script
+        run: echo "${{ github.event.issue.body }}" > issue_body.txt
+        run: cat issue_body.txt
+        run: |
+          python create_jira_ticket.py -h
+          python3 create_jira_ticket.py  --component "GitHub" --issue ${{ github.event.issue.number }} \
+            --github-html-url ${{ github.event.issue.html_url }} --github-issue-title ${{ github.event.issue.title }} \
+            --github-issue-body-file issue_body.txt \
+            --jira-user ${{ secrets.JIRA_USER }} --jira-api-token ${{ secrets.JIRA_API_TOKEN }} \
+            --github-api-token ${{ secrets.GH_API_TOKEN }}

@@ -1,39 +1,20 @@
 #!/usr/bin/env python3
 
-import requests
-import json
 import os
 from jira import JIRA
 import argparse
 from pprint import pprint
 
 
-def scrape_github_issue(repo, issue):
-    # If Github issue ID provided, scrape the contents and link it
-    github_issue_url = (
-        f"https://api.github.com/repos/triton-inference-server/{repo}/issues/{issue}"
-    )
-    github_api_token = os.environ.get("GITHUB_API_TOKEN")
-
-    # Get GitHub issue data
-    if github_api_token:
-        headers = {"Authorization": f"bearer {github_api_token}"}
-    else:
-        headers = None
-
-    response = requests.get(github_issue_url, headers=headers)
-    response.raise_for_status()
-    github_issue_data = json.loads(response.text)
-    return github_issue_data
-
-
 def main(args):
     # JIRA API URL
-    jira_api_url = "https://jirasw.nvidia.com/"
+    if not args.jira_api_url:
+        raise ValueError("Must set JIRA_API_URL environment variable")
+    jira_api_url = args.jira_api_url
 
     # JIRA API token
-    jira_api_token = os.environ.get("JIRA_API_TOKEN")
-    user = os.environ.get("JIRA_USER", os.environ.get("USER"))
+    jira_api_token = args.jira_api_token
+    user = args.jira_user
     if not jira_api_token:
         raise ValueError("Must set JIRA_API_TOKEN environment variable")
 
@@ -43,22 +24,23 @@ def main(args):
     link_map = {l: l for l in args.link}
     # Leave <TODO> as a reminder for creator to fill in more details if needed
     description = "Description: <TODO>\n\n"
-    if args.issue:
-        github_issue_data = scrape_github_issue(args.repo, args.issue)
-        github_url = github_issue_data["html_url"]
-        github_title = github_issue_data["title"]
-        description = f"{github_issue_data['body']}\n\nGitHub Issue: {github_url}\n\n"
-        args.component.append("GitHub")
+    if args.issue:        
+        github_url = args.github_html_url
+        github_title = args.github_issue_title
+        with open(args.github_issue_body_file, 'r') as file:
+            description = file.read().replace('\n', '')
+            print(f"Description: {description}")
         link_map["Github Issue"] = github_url
 
         if not args.title:
             print(f"Setting JIRA title to Github issue title: {github_title}")
-            args.title = github_title
+            args.title = github_title + f" #{args.issue}"
 
     # Append all links/references at the bottom of description for easy viewing
-    description += "References\n"
-    for url in args.link:
-        description += f"- {url}\n"
+    if args.link:
+        description += "\nReferences\n"
+        for url in args.link:
+            description += f"- {url}\n"
 
     fields = {
         "project": {"key": args.jira_board},
@@ -119,6 +101,27 @@ if __name__ == "__main__":
         help="Triton Server Github Repo to associate with the issue number",
         default="server",
     )
+    # github_group.add_argument(
+    #     "--github-api-token",
+    #     type=str,
+    #     help="GitHub API token",
+    #     default=os.environ.get("GH_API_TOKEN"),
+    # )
+    github_group.add_argument(
+        "--github-html-url",
+        type=str,
+        help="GitHub HTML URL",
+    )
+    github_group.add_argument(
+        "--github-issue-title",
+        type=str,
+        help="GitHub issue title",
+    )
+    github_group.add_argument(
+        "--github-issue-body-file",
+        type=str,
+        help="The file that contains the contents of the issue",
+    )
 
     jira_group = parser.add_argument_group("jira", "Settings to tweak on JIRA ticket")
     jira_group.add_argument(
@@ -141,6 +144,7 @@ if __name__ == "__main__":
             "Platforms",
             "Caching",
             "Triton CLI",
+            "GitHub",
         ],
         help="Component name, may be specified multiple times",
     )
@@ -150,6 +154,23 @@ if __name__ == "__main__":
         choices=["TMA", "DLIS", "TPRD"],
         help="JIRA board name",
         default="DLIS",
+    )
+    jira_group.add_argument(
+        "--jira_api_url",
+        type=str,
+        help="JIRA API url",
+    )
+    jira_group.add_argument(
+        "--jira-api-token",
+        type=str,
+        help="JIRA API token",
+        default=os.environ.get("JIRA_API_TOKEN"),
+    )
+    jira_group.add_argument(
+        "--jira-user",
+        type=str,
+        help="JIRA username",
+        default=os.environ.get("JIRA_USER", os.environ.get("USER")),
     )
 
     misc_group = parser.add_argument_group("misc", "Slack, PRs, Misc References")
@@ -170,5 +191,3 @@ if __name__ == "__main__":
         )
 
     main(args)
-
-
