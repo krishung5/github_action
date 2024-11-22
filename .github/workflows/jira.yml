@@ -28,11 +28,11 @@ jobs:
     - name: Install dependencies
       run: |
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: save issue body to file
+      run: echo "${{ github.event.issue.body }}" > issue_body.txt && cat issue_body.txt
     - name: execute py script
-      run: echo "${{ github.event.issue.body }}" > issue_body.txt
-      run: cat issue_body.txt
       run: |
-        python create_jira_ticket.py -h
+        python create_jira_ticket.py -h && \
         python3 create_jira_ticket.py  --component "GitHub" --issue ${{ github.event.issue.number }} \
           --github-html-url ${{ github.event.issue.html_url }} --github-issue-title ${{ github.event.issue.title }} \
           --github-issue-body-file issue_body.txt \
