@@ -2,10 +2,12 @@ name: Create jira ticket
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   issues:
-    types: [opened]
+    # types: [opened]
+    types: [ labeled ]
 
 jobs:  
   create-jira-ticket:
+    if: ${{ github.event.label.name == 'create jira ticket' }}
     runs-on: ubuntu-latest
     name: Create Jira Ticket
     steps:
