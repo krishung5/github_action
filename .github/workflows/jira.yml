@@ -4,20 +4,10 @@ on:
   issues:
     types: [opened]
 
-jobs:
-  # get-issue:
-  #   runs-on: ubuntu-latest
-  #   # name: Print out issue information
-  #   steps:
-  #     - run: echo "Issue title: ${{ github.event.issue.title }}"
-  #     - run: echo "Issue body: ${{ github.event.issue.body }}"
-  #     - run: echo "Issue number: ${{ github.event.issue.number }}"
-  #     - run: echo "Issue html_url: ${{ github.event.issue.html_url }}"
-
-  
+jobs:  
   create-jira-ticket:
     runs-on: ubuntu-latest
-    name: Create Jira ticket
+    name: Create Jira Ticket
     steps:
     - name: checkout repo content
       uses: actions/checkout@v3 # checkout the repository content to github runner.
@@ -29,7 +19,7 @@ jobs:
       run: |
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: save issue body to file
-      run: echo "${{ github.event.issue.body }}" > issue_body.txt && cat issue_body.txt
+      run: echo -e "${{ github.event.issue.body }}" > issue_body.txt && cat issue_body.txt
     - name: execute py script
       run: |
         python3 create_jira_ticket.py  --component "GitHub" --issue "${{ github.event.issue.number }}" \
@@ -37,3 +27,8 @@ jobs:
           --github-issue-body-file issue_body.txt \
           --jira-user "${{ secrets.JIRA_USER }}" --jira-api-token "${{ secrets.JIRA_API_TOKEN }}" \
           --jira-api-url "${{ secrets.JIRA_API_URL }}"
+    - name: cleanup
+      run: rm issue_body.txt
+    # TODO: add comment to issue with jira ticket number
+    # - name: add comment to issue
+      
