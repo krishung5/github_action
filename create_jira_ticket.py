@@ -101,12 +101,6 @@ if __name__ == "__main__":
         help="Triton Server Github Repo to associate with the issue number",
         default="server",
     )
-    # github_group.add_argument(
-    #     "--github-api-token",
-    #     type=str,
-    #     help="GitHub API token",
-    #     default=os.environ.get("GH_API_TOKEN"),
-    # )
     github_group.add_argument(
         "--github-html-url",
         type=str,
