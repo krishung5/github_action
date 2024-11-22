@@ -2,12 +2,13 @@ name: Create jira ticket
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   issues:
+    # Todo: Change the trigger to specific label created
     types: [opened]
 
 jobs:
   get-issue:
     runs-on: ubuntu-latest
-    name: Get issue info
+    # name: Print out issue information
     steps:
       - run: echo "Issue title: ${{ github.event.issue.title }}"
       - run: echo "Issue body: ${{ github.event.issue.body }}"
@@ -15,26 +16,26 @@ jobs:
       - run: echo "Issue html_url: ${{ github.event.issue.html_url }}"
 
   
-  build:
+  create-jira-ticket:
     runs-on: ubuntu-latest
     name: Create Jira ticket
     steps:
     - name: checkout repo content
       uses: actions/checkout@v3 # checkout the repository content to github runner.
-      - name: setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12 #install the python needed
-      - name: Install dependencies
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: execute py script
-        run: echo "${{ github.event.issue.body }}" > issue_body.txt
-        run: cat issue_body.txt
-        run: |
-          python create_jira_ticket.py -h
-          python3 create_jira_ticket.py  --component "GitHub" --issue ${{ github.event.issue.number }} \
-            --github-html-url ${{ github.event.issue.html_url }} --github-issue-title ${{ github.event.issue.title }} \
-            --github-issue-body-file issue_body.txt \
-            --jira-user ${{ secrets.JIRA_USER }} --jira-api-token ${{ secrets.JIRA_API_TOKEN }} \
-            --github-api-token ${{ secrets.GH_API_TOKEN }}
+    - name: setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12 #install the python needed
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: execute py script
+      run: echo "${{ github.event.issue.body }}" > issue_body.txt
+      run: cat issue_body.txt
+      run: |
+        python create_jira_ticket.py -h
+        python3 create_jira_ticket.py  --component "GitHub" --issue ${{ github.event.issue.number }} \
+          --github-html-url ${{ github.event.issue.html_url }} --github-issue-title ${{ github.event.issue.title }} \
+          --github-issue-body-file issue_body.txt \
+          --jira-user ${{ secrets.JIRA_USER }} --jira-api-token ${{ secrets.JIRA_API_TOKEN }} \
+          --github-api-token ${{ secrets.GH_API_TOKEN }}
