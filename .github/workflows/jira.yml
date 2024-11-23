@@ -32,5 +32,8 @@ jobs:
     - name: cleanup
       run: rm issue_body.txt
     # TODO: add comment to issue with jira ticket number
-    # - name: add comment to issue
-      
+    - name: add comment to issue
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        issue-number: ${{ github.event.issue.number }}
+        body-path: 'jira_ticket_number.txt'

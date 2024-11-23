@@ -63,6 +63,9 @@ def main(args):
     # Print this immediately after creation in case an error happens later
     # so ticket can be found and fixed manually.
     print(f"JIRA Ticket created at URL: {jira_api_url}/browse/{key}")
+    # Save the key to a file for later reference
+    with open("jira_ticket_number.txt", "w") as f:
+        f.write("JIRA Ticket Number: ", key)
 
     # Link the JIRA ticket to the specified links and issues
     for title, url in link_map.items():
