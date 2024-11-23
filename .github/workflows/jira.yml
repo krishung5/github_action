@@ -35,5 +35,6 @@ jobs:
     - name: add comment to issue
       uses: peter-evans/create-or-update-comment@v4
       with:
+        token: ${{ secrets.GH_TOKEN }}
         issue-number: ${{ github.event.issue.number }}
         body-path: 'jira_ticket_number.txt'
