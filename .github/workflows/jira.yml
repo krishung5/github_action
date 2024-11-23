@@ -29,12 +29,11 @@ jobs:
           --github-issue-body-file issue_body.txt \
           --jira-user "${{ secrets.JIRA_USER }}" --jira-api-token "${{ secrets.JIRA_API_TOKEN }}" \
           --jira-api-url "${{ secrets.JIRA_API_URL }}"
-    - name: cleanup
-      run: rm issue_body.txt
-    # TODO: add comment to issue with jira ticket number
     - name: add comment to issue
       uses: peter-evans/create-or-update-comment@v4
       with:
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ secrets.GH_API_TOKEN }}
         issue-number: ${{ github.event.issue.number }}
         body-path: 'jira_ticket_number.txt'
+    - name: cleanup
+      run: rm issue_body.txt jira_ticket_number.txt
